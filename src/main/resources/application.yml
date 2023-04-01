@@ -1,1 +1,16 @@
+spring.datasource:
+  hikari.maximum-pool-size: 4
+  url: jdbc:postgresql://svc.sel3.cloudtype.app:32552/postgres # host/db
+  username: root
+  password: nx562olfpdq5rb
+  driver-class-name: org.postgresql.Driver
 
+spring.jpa:
+  database: postgresql
+  hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  hibernate.ddl-auto: update
+  show-sql: true
+
+jwt:
+  secret-key: this_is_clicle_secret_key_for_jwt
+  token.expired-time-ms: 2592000000 # 30 days
