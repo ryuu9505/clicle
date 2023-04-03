@@ -14,3 +14,7 @@ spring.jpa:
 jwt:
   secret-key: this_is_clicle_secret_key_for_jwt
   token.expired-time-ms: 2592000000 # 30 days
+
+spring:
+  redis:
+    url: redis://svc.sel3.cloudtype.app:31399
