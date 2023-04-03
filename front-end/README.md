@@ -1,6 +1,6 @@
-# Getting Started with Create Priny
+# Getting Started with Create Eevee
 
-This project was bootstrapped with [Create Priny](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create Eevee](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
@@ -41,7 +41,7 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 
 ## Learn More
 
-You can learn more in the [Create Priny documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+You can learn more in the [Create Eevee documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
