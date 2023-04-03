@@ -2,11 +2,11 @@ package com.elcilc.clicle.configuration.filter;
 
 import com.elcilc.clicle.model.User;
 import com.elcilc.clicle.service.UserService;
-import com.elcilc.clicle.util.JwtTokenUtils;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.elcilc.clicle.utils.JwtTokenUtils;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
