@@ -8,6 +8,7 @@ import com.elcilc.clicle.model.User;
 import com.elcilc.clicle.model.UserRole;
 import com.elcilc.clicle.model.entity.UserEntity;
 import com.elcilc.clicle.repository.UserEntityRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@Slf4j
 @SpringBootTest
 public class UserServiceTest {
 
@@ -36,12 +38,15 @@ public class UserServiceTest {
     @MockBean
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Disabled("FIXING")
     @Test
     void LoginShouldWorkProperly() {
         TestInfoFixture.TestInfo fixture = TestInfoFixture.get();
 
-        when(userEntityRepository.findByUserName(fixture.getUserName())).thenReturn(Optional.empty());
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUserName(fixture.getUserName());
+        userEntity.setPassword(fixture.getPassword());
+        when(userEntityRepository.findByUserName(fixture.getUserName())).thenReturn(Optional.of(userEntity));
+        when(bCryptPasswordEncoder.matches(fixture.getPassword(), fixture.getPassword())).thenReturn(true);
 
         Assertions.assertDoesNotThrow(() -> userService.login(fixture.getUserName(), fixture.getPassword()));
     }
@@ -71,17 +76,16 @@ public class UserServiceTest {
         Assertions.assertEquals(ErrorCode.INVALID_PASSWORD, exception.getErrorCode());
     }
 
-    @Disabled("FIXING")
     @Test
     void SignUpShouldWorkProperly() {
         TestInfoFixture.TestInfo fixture = TestInfoFixture.get();
 
         when(userEntityRepository.findByUserName(fixture.getUserName()))
-                .thenReturn(Optional.of(UserEntityFixture.get(fixture.getUserName(), fixture.getPassword())));
+                .thenReturn(Optional.empty());
         when(bCryptPasswordEncoder.encode(fixture.getPassword()))
                 .thenReturn("password_encrypt");
         when(userEntityRepository.save(any()))
-                .thenReturn(Optional.of(UserEntityFixture.get(fixture.getUserName(), "password_encrypt")));
+                .thenReturn(UserEntityFixture.get(fixture.getUserName(), "password_encrypt"));
 
         Assertions.assertDoesNotThrow(() -> userService.join(fixture.getUserName(), fixture.getPassword()));
     }
