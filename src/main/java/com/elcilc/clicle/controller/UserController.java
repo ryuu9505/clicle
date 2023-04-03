@@ -2,10 +2,14 @@ package com.elcilc.clicle.controller;
 
 import com.elcilc.clicle.controller.request.UserJoinRequest;
 import com.elcilc.clicle.controller.request.UserLoginRequest;
+import com.elcilc.clicle.controller.response.AlarmResponse;
 import com.elcilc.clicle.controller.response.Response;
 import com.elcilc.clicle.controller.response.UserJoinResponse;
 import com.elcilc.clicle.controller.response.UserLoginResponse;
+import com.elcilc.clicle.model.User;
+import com.elcilc.clicle.service.AlarmService;
 import com.elcilc.clicle.service.UserService;
+import com.elcilc.clicle.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,6 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class UserController {
 
     private final UserService userService;
+    private final AlarmService alarmService;
 
     @PostMapping("/join")
     public Response<UserJoinResponse> join(@RequestBody UserJoinRequest request) {
@@ -36,6 +41,20 @@ public class UserController {
     @GetMapping("/me")
     public Response<UserJoinResponse> me(Authentication authentication) {
         return Response.success(UserJoinResponse.fromUser(userService.loadUserByUsername(authentication.getName())));
+    }
+
+    @GetMapping("/alarm")
+    public Response<Page<AlarmResponse>> alarm(Pageable pageable, Authentication authentication) {
+        log.info("principal={}",authentication.getPrincipal());
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class);
+        return Response.success(userService.alarmList(user.getId(), pageable).map(AlarmResponse::fromAlarm));
+    }
+
+    @GetMapping(value = "/alarm/subscribe")
+    public SseEmitter subscribe(Authentication authentication) {
+        log.info("subscribe");
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class);
+        return alarmService.connectNotification(user.getId());
     }
 
 }

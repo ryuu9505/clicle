@@ -1,37 +1,46 @@
 package com.elcilc.clicle.model.entity;
 
-import com.elcilc.clicle.model.UserRole;
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
-
+import java.util.List;
 
 @Setter
 @Getter
 @Entity
-@Table(name = "\"user\"")
-@SQLDelete(sql = "UPDATE \"user\" SET removed_at = NOW() WHERE id=?")
+@Table(name = "\"post\"")
+@SQLDelete(sql = "UPDATE \"post\" SET removed_at = NOW() WHERE id=?")
 @Where(clause = "removed_at is NULL")
 @NoArgsConstructor
-public class UserEntity {
+public class PostEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = null;
 
-    @Column(name = "user_name", unique = true)
-    private String userName;
+    @Column(name = "title")
+    private String title;
 
-    private String password;
+    @Column(name = "body", columnDefinition = "TEXT")
+    private String body;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.USER;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private List<CommentEntity> comments;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private List<LikeEntity> likes;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;
@@ -53,10 +62,11 @@ public class UserEntity {
         this.updatedAt = Timestamp.from(Instant.now());
     }
 
-    public static UserEntity of(String userName, String encodedPwd) {
-        UserEntity entity = new UserEntity();
-        entity.setUserName(userName);
-        entity.setPassword(encodedPwd);
+    public static PostEntity of(String title, String body, UserEntity user) {
+        PostEntity entity = new PostEntity();
+        entity.setTitle(title);
+        entity.setBody(body);
+        entity.setUser(user);
         return entity;
     }
 

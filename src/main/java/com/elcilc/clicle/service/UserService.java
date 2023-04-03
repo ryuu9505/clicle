@@ -2,23 +2,30 @@ package com.elcilc.clicle.service;
 
 import com.elcilc.clicle.exception.ClicleApplicationException;
 import com.elcilc.clicle.exception.ErrorCode;
+import com.elcilc.clicle.model.Alarm;
 import com.elcilc.clicle.model.User;
 import com.elcilc.clicle.model.entity.UserEntity;
+import com.elcilc.clicle.repository.AlarmEntityRepository;
 import com.elcilc.clicle.repository.UserEntityRepository;
-import com.elcilc.clicle.util.JwtTokenUtils;
+import com.elcilc.clicle.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserEntityRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+    private final UserEntityRepository userRepository;
+    private final AlarmEntityRepository alarmEntityRepository;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -36,6 +43,8 @@ public class UserService {
         UserEntity userEntity = userRepository.findByUserName(userName).orElseThrow(() -> new ClicleApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
 
         if (!encoder.matches(password, userEntity.getPassword())) {
+            log.info(password);
+            log.info(userEntity.getPassword());
             throw new ClicleApplicationException(ErrorCode.INVALID_PASSWORD);
         }
 
@@ -51,6 +60,11 @@ public class UserService {
 
         UserEntity savedUser = userRepository.save(UserEntity.of(userName, encoder.encode(password)));
         return User.fromEntity(savedUser);
+    }
+
+    @Transactional
+    public Page<Alarm> alarmList(Integer userId, Pageable pageable) {
+        return alarmEntityRepository.findAllByUserId(userId, pageable).map(Alarm::fromEntity);
     }
 
 }

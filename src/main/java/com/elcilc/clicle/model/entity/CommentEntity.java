@@ -1,37 +1,38 @@
 package com.elcilc.clicle.model.entity;
 
-import com.elcilc.clicle.model.UserRole;
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
-
 
 @Setter
 @Getter
 @Entity
-@Table(name = "\"user\"")
-@SQLDelete(sql = "UPDATE \"user\" SET removed_at = NOW() WHERE id=?")
+@Table(name = "\"comment\"")
+@SQLDelete(sql = "UPDATE \"comment\" SET removed_at = NOW() WHERE id=?")
 @Where(clause = "removed_at is NULL")
 @NoArgsConstructor
-public class UserEntity {
+public class CommentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id = null;
 
-    @Column(name = "user_name", unique = true)
-    private String userName;
+    @Column(name = "comment")
+    private String comment;
 
-    private String password;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role = UserRole.USER;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private PostEntity post;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;
@@ -53,10 +54,11 @@ public class UserEntity {
         this.updatedAt = Timestamp.from(Instant.now());
     }
 
-    public static UserEntity of(String userName, String encodedPwd) {
-        UserEntity entity = new UserEntity();
-        entity.setUserName(userName);
-        entity.setPassword(encodedPwd);
+    public static CommentEntity of(String comment, PostEntity post, UserEntity user) {
+        CommentEntity entity = new CommentEntity();
+        entity.setComment(comment);
+        entity.setPost(post);
+        entity.setUser(user);
         return entity;
     }
 
