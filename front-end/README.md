@@ -1,6 +1,6 @@
 # Getting Started with Create React app
 
-This project was bootstrapped with [Create Eevee](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create React app](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
